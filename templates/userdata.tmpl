@@ -1,0 +1,23 @@
+#cloud-config
+
+final_message: "The system is finally up, after $UPTIME seconds"
+users:
+%{ for user in users ~}
+  - name: ${user.name}
+    gecos: ${user.fullname}
+    sudo: ${lookup(user, "sudo", sudo)}
+    groups: ${lookup(user, "groups", groups)}
+    shell: ${lookup(user, "shell", shell)}
+    ssh_authorized_keys:
+%{ for key in user.ssh_authorized_keys ~}
+      - ${key}
+%{ endfor ~}
+
+%{ endfor ~}
+write_files:
+  - content: |
+      ECS_CLUSTER=${cluster_name}
+      ECS_ENABLE_SPOT_INSTANCE_DRAINING=true
+
+    path: /etc/ecs/ecs.config
+
