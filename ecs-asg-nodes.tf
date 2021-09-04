@@ -26,7 +26,7 @@ resource "aws_launch_configuration" "gpu-ecs-node" {
   user_data = local.userdata
 }
 
-variable "asg_desired_capacity" {
+variable "asg_desired_initial_capacity" {
   type    = number
   default = 0
 }
@@ -42,7 +42,7 @@ resource "aws_autoscaling_group" "worker-autoscale" {
     desired_capacity]
   }
   name              = "${var.cluster_name}-ecs-workers"
-  desired_capacity  = var.asg_desired_capacity
+  desired_capacity  = var.asg_desired_initial_capacity
   health_check_type = "EC2"
   max_size          = var.asg_max_size
   min_size          = 0
@@ -51,8 +51,8 @@ resource "aws_autoscaling_group" "worker-autoscale" {
   vpc_zone_identifier = [
   var.subnet_id]
 
-  availability_zones = [
-  var.availability_zone]
+//  availability_zones = [
+//  var.availability_zone]
 
   tag {
     propagate_at_launch = true

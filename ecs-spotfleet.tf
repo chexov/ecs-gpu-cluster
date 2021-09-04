@@ -8,7 +8,7 @@ variable "spot_fleet_max_price" {
   default = "1.1"
 }
 
-variable "spot_fleet_target_capacity" {
+variable "spot_fleet_target_initial_capacity" {
   type    = number
   default = 0
 }
@@ -22,7 +22,7 @@ resource "aws_spot_fleet_request" "ecs_spot_nodes" {
 
   iam_fleet_role      = aws_iam_role.ecs-instance.arn
   allocation_strategy = "diversified"
-  target_capacity     = var.spot_fleet_target_capacity
+  target_capacity     = var.spot_fleet_target_initial_capacity
   valid_until         = var.valid_until
   fleet_type          = "maintain"
 

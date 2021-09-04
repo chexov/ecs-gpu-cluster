@@ -33,12 +33,38 @@ variable "security_group_id" {
   description = "Security group ID for EC2 nodes"
 }
 
-variable "awslogs_group_detectron" {
+variable "awslogs_group_worker" {
   type = string
 }
+
 variable "awslogs_region" {
   type = string
 }
+
 variable "awslogs_group_cwagent" {
   type = string
+}
+
+variable "worker_env" {
+  type = list(object({
+    name : string,
+    value : string
+  }))
+
+  default = []
+}
+
+variable "ec2_instance_users" {
+  type = list(object({
+    name : string
+    fullname : string,
+    ssh_authorized_keys : list(string)
+  }))
+
+  default = [
+  ]
+}
+
+variable "worker_command" {
+  type = list(string)
 }

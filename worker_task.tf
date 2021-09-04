@@ -26,13 +26,43 @@ resource "aws_ssm_parameter" "ecs-cwagent-sidecar-ec2" {
 EOF
 }
 
+locals {
+  initial_env = [
+    {
+      name : "DEBUG",
+      value : "False"
+    },
+    {
+      name : "AWS_SQS_QUEUE",
+      value : data.aws_arn.sqs_arn.resource
+    },
+    {
+      name : "STATSD_HOST",
+      value : "cloudwatch-agent"
+    },
+    {
+      name : "STATSD_PORT",
+      value : "8125"
+    },
+    {
+      name : "STATSD_SAMPLE_RATE",
+      value : "1"
+    },
+    {
+      name : "STATSD_DISABLED",
+      value : "False"
+    }
+  ]
+
+  container_env = concat(local.initial_env, var.worker_env)
+}
+
 resource "aws_ecs_task_definition" "worker_task_definition" {
   execution_role_arn = aws_iam_role.ecs-instance.arn
   family             = local.service_name
   network_mode       = "bridge"
   //  count = 1
-  requires_compatibilities = [
-  "EC2"]
+  requires_compatibilities = ["EC2"]
   tags = {
     Name      = "Worker Task Def"
     Terraform = true
@@ -49,42 +79,18 @@ resource "aws_ecs_task_definition" "worker_task_definition" {
     "links": [
       "cloudwatch-agent"
     ],
-    "environment": [
-      {
-        "name": "DEBUG",
-        "value": "False"
-      },
-      {
-        "name": "AWS_SQS_QUEUE",
-        "value": "${data.aws_arn.sqs_arn.resource}"
-      },
-      {
-        "name": "STATSD_HOST",
-        "value": "cloudwatch-agent"
-      },
-      {
-        "name": "STATSD_PORT",
-        "value": "8125"
-      },
-      {
-        "name": "STATSD_SAMPLE_RATE",
-        "value": "1"
-      },
-      {
-        "name": "STATSD_DISABLED",
-        "value": "False"
-      }
-    ],
+    "environment": ${jsonencode(local.container_env)},
     "portMappings": [],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
         "awslogs-create-group": "True",
-        "awslogs-group": "${var.awslogs_group_detectron}",
+        "awslogs-group": "${var.awslogs_group_worker}",
         "awslogs-region": "${var.awslogs_region}",
         "awslogs-stream-prefix": "${local.service_name}"
       }
     },
+    "command": ${jsonencode(var.worker_command)},
     "resourceRequirements": [
       {
         "type": "GPU",
