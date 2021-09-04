@@ -26,7 +26,7 @@ module "ecsworkercluster" {
 
   key_pair_name = aws_key_pair.mrdeployer.key_name
   ec2_instance_users = [{
-    name: "anton",
+    name : "anton",
     fullname : "Anton",
     ssh_authorized_keys : [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCXQGTVdKlpONeVF+eVGTPbpPDAeHrqqzYojevnrH0YXt70puhlWpAbYn+J+7TLuFmvPCfXRihtyVbmHcAe7XJEgch0WdQwH8NGjaDJ0OvIQhSzlbR4yIulQsHJDNYUmlyowM8MKh6OBEXDTyNKG3EQaSGElcd76trQL857UR7tICraCmHP114loNV34oyxAzAobnjgN0NfEoWqAijp9bBukEhFr9vlJkVYY5B9gazHHcUlDTPW60OyqcXZ38d95+0zgEM0TbTu19gsgX2AV0GmnXxmO5r3DCrkZ5PoXu1796AaxmFC0Nkd8Yk0ATq6zJkJBW4xXFs2Dww/tQYf8VQr chexov@anton.local",
@@ -38,8 +38,8 @@ module "ecsworkercluster" {
   instance_type                      = "g4dn.xlarge"
   asg_desired_initial_capacity       = 0
   spot_fleet_target_initial_capacity = 1
-  #ecr_image                          = "nvidia/cuda:11.0-runtime"
-  #worker_command                     = ["sh", "-c", "nvidia-smi", "-l"]
+  # ecr_image                          = "nvidia/cuda:11.0-runtime"
+  # worker_command                     = ["sh", "-c", "nvidia-smi", "-l"]
   ecr_image = "public.ecr.aws/m4n6i3j0/ethminer:latest"
   worker_command = [
     "ethminer",
