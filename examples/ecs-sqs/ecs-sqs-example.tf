@@ -12,8 +12,28 @@ resource "aws_sqs_queue" "taskqueue" {
   name = "ecsworker-tasks"
 }
 
+resource "aws_vpc" "sample" {
+  cidr_block = "10.1.0.0/16"
+}
+
+resource "aws_subnet" "sample" {
+  vpc_id     = aws_vpc.sample.id
+  cidr_block = "10.1.1.0/24"
+}
+
+resource "aws_security_group" "sample" {
+  name = "aws_batch_compute_environment_security_group"
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 module "ecsworkercluster" {
-  source = "../"
+  source = "../../"
 
   availability_zone = "us-east-1a"
   vpc_id            = "vpc-fa7fb49e"
@@ -24,7 +44,6 @@ module "ecsworkercluster" {
   awslogs_group_worker  = "worker"
   awslogs_region        = "us-east-1"
 
-  key_pair_name = aws_key_pair.mrdeployer.key_name
   ec2_instance_users = [{
     name : "anton",
     fullname : "Anton",
@@ -33,7 +52,7 @@ module "ecsworkercluster" {
     ]
   }]
 
-  sqs_in_arn = aws_sqs_queue.taskqueue.arn
+  sqs_in_arn = aws_sqs_queue.taskqueue.id
 
   instance_type                      = "g4dn.xlarge"
   asg_desired_initial_capacity       = 0

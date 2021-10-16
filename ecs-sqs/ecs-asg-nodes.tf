@@ -4,7 +4,6 @@ resource "aws_launch_configuration" "gpu-ecs-node" {
   image_id = var.ecs_node_ami_id == "" ? data.aws_ami.ecs_ami_gpu.id : var.ecs_node_ami_id
 
   associate_public_ip_address = "true"
-  key_name                    = var.key_pair_name
   instance_type               = var.instance_type
   iam_instance_profile        = aws_iam_instance_profile.ecs-instance.id
 
@@ -39,7 +38,8 @@ variable "asg_max_size" {
 resource "aws_autoscaling_group" "worker-autoscale" {
   lifecycle {
     ignore_changes = [
-    desired_capacity]
+      desired_capacity
+    ]
   }
   name              = "${var.cluster_name}-ecs-workers"
   desired_capacity  = var.asg_desired_initial_capacity
@@ -49,10 +49,11 @@ resource "aws_autoscaling_group" "worker-autoscale" {
 
   launch_configuration = aws_launch_configuration.gpu-ecs-node.name
   vpc_zone_identifier = [
-  var.subnet_id]
+    var.subnet_id
+  ]
 
-//  availability_zones = [
-//  var.availability_zone]
+  //  availability_zones = [
+  //  var.availability_zone]
 
   tag {
     propagate_at_launch = true

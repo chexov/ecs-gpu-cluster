@@ -17,7 +17,8 @@ data "aws_iam_policy_document" "ecrpolicy" {
       "ecr:BatchGetImage"
     ]
     resources = [
-    "*"]
+      "*"
+    ]
   }
 
   statement {
@@ -39,9 +40,11 @@ data "aws_iam_policy_document" "ecrpolicy" {
     sid    = "Metrics"
     effect = "Allow"
     actions = [
-    "cloudwatch:PutMetricData"]
+      "cloudwatch:PutMetricData"
+    ]
     resources = [
-    "*"]
+      "*"
+    ]
   }
 
   statement {
@@ -54,7 +57,8 @@ data "aws_iam_policy_document" "ecrpolicy" {
       "logs:DescribeLogStreams"
     ]
     resources = [
-    "arn:aws:logs:*:*:*"]
+      "arn:aws:logs:*:*:*"
+    ]
   }
 }
 
@@ -76,9 +80,11 @@ data "aws_iam_policy_document" "ssm" {
     actions = [
       "ssm:GetParametersByPath",
       "ssm:GetParameters",
-    "ssm:GetParameter"]
+      "ssm:GetParameter"
+    ]
     resources = [
-    aws_ssm_parameter.ecs-cwagent-sidecar-ec2.arn]
+      aws_ssm_parameter.ecs-cwagent-sidecar-ec2.arn
+    ]
   }
 }
 

@@ -1,6 +1,7 @@
 resource "aws_ecs_service" "worker" {
   depends_on = [
-  aws_iam_role_policy.ecr_access]
+    aws_iam_role_policy.ecr_access
+  ]
 
   name                = local.service_name
   cluster             = aws_ecs_cluster.cluster.id
@@ -55,21 +56,9 @@ locals {
   ]
 
   container_env = concat(local.initial_env, var.worker_env)
-}
 
-resource "aws_ecs_task_definition" "worker_task_definition" {
-  execution_role_arn = aws_iam_role.ecs-instance.arn
-  family             = local.service_name
-  network_mode       = "bridge"
-  //  count = 1
-  requires_compatibilities = ["EC2"]
-  tags = {
-    Name      = "Worker Task Def"
-    Terraform = true
-  }
-  container_definitions = <<EOF
-[
-  {
+  task_container = <<EOF
+ {
     "name": "${local.service_name}",
     "image": "${var.ecr_image}",
     "essential": true,
@@ -97,7 +86,24 @@ resource "aws_ecs_task_definition" "worker_task_definition" {
         "value": "1"
       }
     ]
-  },
+  }
+EOF
+
+}
+
+resource "aws_ecs_task_definition" "worker_task_definition" {
+  execution_role_arn = aws_iam_role.ecs-instance.arn
+  family             = local.service_name
+  network_mode       = "bridge"
+  //  count = 1
+  requires_compatibilities = ["EC2"]
+  tags = {
+    Name      = "Worker Task Def"
+    Terraform = true
+  }
+  container_definitions = <<EOF
+[
+ ${local.task_container},
   {
     "name": "cloudwatch-agent",
     "image": "amazon/cloudwatch-agent:latest",

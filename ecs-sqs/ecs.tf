@@ -1,10 +1,10 @@
-variable instance_type {
+variable "instance_type" {
   description = "EC2 node instance type"
   type        = string
   default     = "p3.2xlarge"
 }
 
-variable ecs_node_ami_id {
+variable "ecs_node_ami_id" {
   description = "AMI ID of the base EC2 node instance"
   type        = string
   // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-ami-versions.html
@@ -38,7 +38,8 @@ resource "aws_security_group" "worker_sg" {
     to_port   = 0
     protocol  = "-1"
     cidr_blocks = [
-    "0.0.0.0/0"]
+      "0.0.0.0/0"
+    ]
   }
 
   tags = {
@@ -106,7 +107,8 @@ data "aws_ami" "ecs_ami_cpu" {
   filter {
     name = "name"
     values = [
-    "amzn-ami-*-amazon-ecs-optimized"]
+      "amzn-ami-*-amazon-ecs-optimized"
+    ]
   }
 }
 
@@ -126,12 +128,7 @@ data "aws_ami" "ecs_ami_gpu" {
   filter {
     name = "name"
     values = [
-    "amzn2-ami-ecs-gpu-hvm-*-x86_64-ebs"]
+      "amzn2-ami-ecs-gpu-hvm-*-x86_64-ebs"
+    ]
   }
-}
-
-
-variable "key_pair_name" {
-  description = "aws_key_pair name for the EC2 instances"
-  type        = string
 }

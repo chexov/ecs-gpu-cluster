@@ -17,7 +17,8 @@ resource "aws_spot_fleet_request" "ecs_spot_nodes" {
 
   lifecycle {
     ignore_changes = [
-    target_capacity]
+      target_capacity
+    ]
   }
 
   iam_fleet_role      = aws_iam_role.ecs-instance.arn
@@ -35,7 +36,6 @@ resource "aws_spot_fleet_request" "ecs_spot_nodes" {
     instance_type            = var.instance_type
     ami                      = var.ecs_node_ami_id == "" ? data.aws_ami.ecs_ami_gpu.id : var.ecs_node_ami_id
     iam_instance_profile_arn = aws_iam_instance_profile.ecs-instance.arn
-    key_name                 = var.key_pair_name
     availability_zone        = var.availability_zone
     subnet_id                = var.subnet_id
     vpc_security_group_ids = [
